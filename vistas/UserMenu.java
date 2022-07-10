@@ -1,4 +1,3 @@
-
 package vistas;
 
 import Modelo.Conexion;
@@ -6,21 +5,25 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author JHON JAIRO
  */
 public class UserMenu extends javax.swing.JFrame {
 //1: Creamos la instancia de la clase conexion
+
     Conexion conexion = new Conexion();
     Connection connection;
-   //2: Se Trae la libreria Statement que permite ejecutar los query SQL
+    //2: Se Trae la libreria Statement que permite ejecutar los query SQL
     Statement st;
     ResultSet rs;
-  //3: Se Crea la instancia de la tabla de la interfaz
-   
+    //3: Se Crea la instancia de la tabla de la interfaz
+
     DefaultTableModel contenidoTablaEmpleados;
+
     public UserMenu() {
         initComponents();
         setLocationRelativeTo(null);
@@ -28,46 +31,84 @@ public class UserMenu extends javax.swing.JFrame {
     }
 
     //4:Metodo para traer datos existentes de base de datos
-   //Crear el método que lista los empleados de la base de datos
-     private void listarEmpleados(){
-        String queryConsulta = "SELECT * FROM empleados";
-        try{
-            connection = conexion.getConnection();
-            //Creamos el queryConsulta
-            st = connection.createStatement();
-            // Ejecutamos el query que contiene la variable queryConsulta
-            rs = st.executeQuery(queryConsulta);
-            // Creamos un objeto que almacena todos los registros de empleados
-            // que existen en la base de datos
-            Object[] empleados = new Object[5];
-            contenidoTablaEmpleados = (DefaultTableModel)tblEmpleados.getModel();
-            // Mientras el resultado del queryConsulta encuentre registros en la
-            // base de datos se ingresa al while
-            while(rs.next()){
+    //Crear el método que lista los empleados de la base de datos
+    private void listarEmpleados() {
+        String filtroBusqueda = txtSearch.getText();
+        if(filtroBusqueda.isEmpty()){
+           String queryConsulta = "SELECT * FROM empleados";
+           try {
+             connection = conexion.getConnection();
+             //Creamos el queryConsulta
+             st = connection.createStatement();
+             // Ejecutamos el query que contiene la variable queryConsulta
+             rs = st.executeQuery(queryConsulta);
+             // Creamos un objeto que almacena todos los registros de empleados
+             // que existen en la base de datos
+             Object[] empleados = new Object[6];
+             contenidoTablaEmpleados = (DefaultTableModel) tblEmpleados.getModel();
+              // Mientras el resultado del queryConsulta encuentre registros en la
+              // base de datos se ingresa al while
+               while (rs.next()) {
                 empleados[0] = rs.getInt("idEMP");
-                empleados[1] = rs.getString("nombreEmp") + " " + rs.getString("apellidos");
-                empleados[2] = rs.getString("tipoDocumento");
-                empleados[3] = rs.getString("documento");
-                empleados[4] = rs.getString("correo");
+                empleados[1] = rs.getString("nombreEmp");
+                empleados[2] = rs.getString("apellidos");
+                empleados[3] = rs.getString("tipoDocumento");
+                empleados[4] = rs.getString("documento");
+                empleados[5] = rs.getString("correo");
                 contenidoTablaEmpleados.addRow(empleados);
-               System.out.println("id: " + empleados[0] + ", nombre: " + empleados[1]
-            + ",  documento: "+ empleados[2] + " " + empleados[3]
-            + ", correo: " + empleados[4]);
-            }
-            tblEmpleados.setModel(contenidoTablaEmpleados);
-        }catch(SQLException e){
+                System.out.println("id: " + empleados[0] + ", nombre: " + empleados[1] + ",apellidos: " + empleados[2]
+                        + ",  documento: " + empleados[3] + " " + empleados[4]
+                        + ", correo: " + empleados[5]);
+                tblEmpleados.setModel(contenidoTablaEmpleados);
+              }
+
+           } catch (SQLException e) {
             System.out.println("Error");
+
+           }
+        }else{
+            String queryConsulta = "SELECT * FROM empleados WHERE nombreEmp  LIKE'%"+filtroBusqueda+"%' OR apellidos LIKE '%"+filtroBusqueda+"%'";
+            System.out.println(queryConsulta);
+           try {
+             connection = conexion.getConnection();
+             //Creamos el queryConsulta
+             st = connection.createStatement();
+             // Ejecutamos el query que contiene la variable queryConsulta
+             rs = st.executeQuery(queryConsulta);
+             // Creamos un objeto que almacena todos los registros de empleados
+             // que existen en la base de datos
+             Object[] empleados = new Object[6];
+             contenidoTablaEmpleados = (DefaultTableModel) tblEmpleados.getModel();
+              // Mientras el resultado del queryConsulta encuentre registros en la
+              // base de datos se ingresa al while
+               while (rs.next()) {
+                empleados[0] = rs.getInt("idEMP");
+                empleados[1] = rs.getString("nombreEmp");
+                empleados[2] = rs.getString("apellidos");
+                empleados[3] = rs.getString("tipoDocumento");
+                empleados[4] = rs.getString("documento");
+                empleados[5] = rs.getString("correo");
+                contenidoTablaEmpleados.addRow(empleados);
+                System.out.println("id: " + empleados[0] + ", nombre: " + empleados[1] + ",apellidos: " + empleados[2]
+                        + ",  documento: " + empleados[3] + " " + empleados[4]
+                        + ", correo: " + empleados[5]);
+                tblEmpleados.setModel(contenidoTablaEmpleados);
+              }
+
+           } catch (SQLException e) {
+            System.out.println("Error");
+
+           }
         }
     }
 
-public void borrarDatosTabla() {
+    public void borrarDatosTabla() {
         for (int i = 0; i < tblEmpleados.getRowCount(); i++) {
             //Eliminamos todos los registros de empleados que tiene la tabla
             contenidoTablaEmpleados.removeRow(i);
-            i = i-1;
+            i = i - 1;
         }
     }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -85,9 +126,9 @@ public void borrarDatosTabla() {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblEmpleados = new javax.swing.JTable();
-        btnConsultar = new javax.swing.JButton();
-        btnEditar = new javax.swing.JButton();
-        btnEliminar = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        btnBuscar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(204, 255, 204));
@@ -110,23 +151,26 @@ public void borrarDatosTabla() {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 852, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 852, Short.MAX_VALUE)
+                .addGap(23, 23, 23))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 433, Short.MAX_VALUE)
+            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 468, Short.MAX_VALUE)
         );
 
         Home.addTab("HOME", jPanel4);
 
-        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel2.setBackground(new java.awt.Color(153, 153, 153));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("INFORMACION EMPLEADOS");
 
         btnAddUser.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         btnAddUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/img4.png"))); // NOI18N
-        btnAddUser.setText("Crear Empleado");
+        btnAddUser.setText("Nuevo");
         btnAddUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddUserActionPerformed(evt);
@@ -141,85 +185,73 @@ public void borrarDatosTabla() {
 
             },
             new String [] {
-                "Id", "Nombre", "Tipo Documento", "Documento", "Correo"
+                "Id", "Nombre", "Apellidos", "Tipo Documento", "Documento", "Correo"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, true
+                false, false, false, false, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
+        tblEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblEmpleadosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblEmpleados);
-
-        btnConsultar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnConsultar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/showUser (1).png"))); // NOI18N
-        btnConsultar.setText("Consultar");
-        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConsultarActionPerformed(evt);
-            }
-        });
-
-        btnEditar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/editUser (1).png"))); // NOI18N
-        btnEditar.setText("Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-
-        btnEliminar.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/deleteUser (1).png"))); // NOI18N
-        btnEliminar.setText("Eliminar");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addContainerGap()
                 .addComponent(jScrollPane1)
                 .addContainerGap())
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(188, 188, 188)
-                .addComponent(btnConsultar)
-                .addGap(29, 29, 29)
-                .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(btnEliminar)
-                .addContainerGap(234, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnConsultar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                .addContainerGap())
         );
+
+        jLabel4.setText("Nombre");
+
+        btnBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/buns.jpg"))); // NOI18N
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(43, 43, 43)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(105, 105, 105)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
                 .addComponent(btnAddUser)
                 .addGap(67, 67, 67))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(168, 168, 168)
+                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 14, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -228,15 +260,21 @@ public void borrarDatosTabla() {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE))
+                        .addComponent(jLabel2))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(43, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAddUser)
                             .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(22, 22, 22)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -269,20 +307,50 @@ public void borrarDatosTabla() {
 
     private void btnAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddUserActionPerformed
         //1: Creamos una instancia del dialogo
-        AddUserForm addUserF = new AddUserForm(this,  true);
+        AddUserForm addUserF = new AddUserForm(this, true);
         addUserF.setVisible(true);
         borrarDatosTabla();
         listarEmpleados();
-        
+
     }//GEN-LAST:event_btnAddUserActionPerformed
 
-    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnConsultarActionPerformed
+    private void tblEmpleadosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEmpleadosMouseClicked
+        int row = tblEmpleados.getSelectedRow();
+        System.out.println("Fila seleccionada n° : " + row);
+        //1: validar si el usaurio no ha seleccionado el empleado
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Debes de seleccionar un empleado", " ", JOptionPane.WARNING_MESSAGE);
+        } else {
+            //2: cada fila es un registro de empleado
+            int idEMP = Integer.parseInt(tblEmpleados.getValueAt(row, 0).toString());
+            String nombreEmp = tblEmpleados.getValueAt(row, 1).toString();
+            String apellidos = tblEmpleados.getValueAt(row, 2).toString();
+            String tipoDocumento = tblEmpleados.getValueAt(row, 3).toString();
+            String documento = tblEmpleados.getValueAt(row, 4).toString();
+            String correo = tblEmpleados.getValueAt(row, 5).toString();
 
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnEditarActionPerformed
+            System.out.println("idEMP: " + idEMP + ", nombre: " + nombreEmp + " "
+                    + apellidos + ", documento: " + tipoDocumento + " " + documento
+                    + ", correo: " + correo);
+            ShowUserForm showUserform = new ShowUserForm(this, true);
+            /*
+            mediante la instancia del JDialog enviamos los datos del empleado
+            de la vista actual que se muestra la info en detalle
+             */
+            showUserform.recibirDatos(idEMP, nombreEmp, apellidos, tipoDocumento, documento, correo);
+            showUserform.setVisible(true);
+            // para que la tabla actualice la informacion  del empleado que se acaba de editar
+////            // donde debe de borrrar todos los elementos de la tabla y volverlos a cargar
+            borrarDatosTabla();
+            listarEmpleados();
+        }
+    }//GEN-LAST:event_tblEmpleadosMouseClicked
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        borrarDatosTabla();
+        listarEmpleados();
+      
+    }//GEN-LAST:event_btnBuscarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -322,12 +390,11 @@ public void borrarDatosTabla() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Home;
     private javax.swing.JButton btnAddUser;
-    private javax.swing.JButton btnConsultar;
-    private javax.swing.JButton btnEditar;
-    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -335,5 +402,6 @@ public void borrarDatosTabla() {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTable tblEmpleados;
+    private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }

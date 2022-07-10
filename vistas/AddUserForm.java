@@ -6,10 +6,13 @@
 package vistas;
 
 import Modelo.Conexion;
+import Modelo.TipoDocumentoEnum;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 /**
@@ -17,6 +20,8 @@ import javax.swing.JOptionPane;
  * @author JHON JAIRO
  */
 public class AddUserForm extends javax.swing.JDialog {
+
+    ComboBoxModel modeloEnumTipoDocumento;
     //1: Creamos la instancia de la clase conexion
     Conexion conexion = new Conexion();
     Connection connection;
@@ -24,11 +29,19 @@ public class AddUserForm extends javax.swing.JDialog {
     Statement st;
     ResultSet rs;
     
+    //3: creamos una variable del tipo ComboboxModel para modificar las de lista desplegable de tipo documento
+    
     public AddUserForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+         modeloEnumTipoDocumento = new DefaultComboBoxModel(TipoDocumentoEnum.values());
+         
+       
         initComponents();
         this.setLocationRelativeTo(parent);
+        
+      
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -72,7 +85,12 @@ public class AddUserForm extends javax.swing.JDialog {
 
         jLabel5.setText("Tipo de Documento");
 
-        cbTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cedula de Ciudadania", "Cedual Extrranjera", "Pasaporte", "Libreta Militar" }));
+        cbTipoDocumento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CedulaCuidadania,", "CedulaExtranjera", "LibretaMilitar", "Pasaporte", "Otro" }));
+        cbTipoDocumento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbTipoDocumentoActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Documento");
 
@@ -239,6 +257,10 @@ public class AddUserForm extends javax.swing.JDialog {
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void cbTipoDocumentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTipoDocumentoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbTipoDocumentoActionPerformed
 
     /**
      * @param args the command line arguments
